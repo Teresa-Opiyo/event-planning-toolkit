@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Event Planning Toolkit | Teresa Akumu Opiyo</title>
+<meta name="description" content="Free browser tools for event planning: budget tracker, checklist with deadlines, run of show builder and feedback analyser.">
+<style>
+:root{--bg:#f6f8fb;--panel:#fff;--ink:#1c2733;--muted:#5a6a7a;--line:#dbe3ec;--navy:#1f4e79;--navy2:#2f6aa3;--chip:#e8eff7;--good:#4c9f70;--mid:#d9a21b;--bad:#c4473a}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1720;--panel:#17212c;--ink:#e6edf4;--muted:#9fb0c1;--line:#2a3a4b;--navy:#7fb2e6;--navy2:#5b97d4;--chip:#223244}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+header{background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header h1{margin:0;padding:14px 0 2px;font-size:20px;color:var(--navy)}header p{margin:0 0 6px;color:var(--muted);font-size:13px}
+nav{display:flex;gap:4px;overflow-x:auto}nav button{border:0;background:none;color:var(--muted);font:inherit;font-size:14px;padding:10px 12px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+nav button.on{color:var(--navy);border-bottom-color:var(--navy);font-weight:700}
+.panel{display:none;padding:20px 0}.panel.on{display:block}
+h2{margin:0 0 4px;color:var(--navy);font-size:22px}.lead{color:var(--muted);margin:0 0 16px;max-width:760px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}.row>label{display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:3px;flex:1 1 140px}
+.row>label.wide{flex:3 1 260px}
+input,select,textarea{font:inherit;font-size:14px;padding:7px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);width:100%}
+textarea{min-height:70px;resize:vertical}
+button.b{font:inherit;font-size:14px;border:1px solid var(--navy);background:var(--navy);color:#fff;border-radius:6px;padding:8px 14px;cursor:pointer}
+@media (prefers-color-scheme:dark){button.b{color:#0f1720}}
+button.b.alt{background:none;color:var(--navy)}button.b.sm{padding:3px 8px;font-size:12px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}.kpi b{display:block;font-size:22px;color:var(--navy)}.kpi span{font-size:12px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left;vertical-align:top}th{color:var(--muted);font-size:12px}
+.tag{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:700;color:#fff}.High,.Red,.Blocked{background:var(--bad)}.Medium,.Amber,.Inprogress{background:var(--mid);color:#222}.Low,.Green,.Done{background:var(--good)}.Notstarted{background:#7b8a99}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.matrix{display:none;display:grid;grid-template-columns:34px repeat(5,1fr);gap:3px;font-size:12px}.matrix div{text-align:center;padding:10px 2px;border-radius:5px;min-height:42px}.matrix .ax{color:var(--muted);padding:10px 0}
+.bar{height:12px;border-radius:6px;background:var(--chip);overflow:hidden}.bar i{display:block;height:100%;background:var(--navy2)}
+select.rs,select.ts{width:auto;min-width:104px}
+pre{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;font:13px/1.5 Arial,Helvetica,sans-serif;margin:0}
+.note{color:var(--muted);font-size:12px}.od{color:var(--bad);font-weight:700}
+footer{padding:10px 16px 30px;color:var(--muted);font-size:12px}
+@media print{header,nav,.noprint{display:none}.panel{display:none}.panel.on{display:block}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>Event Planning Toolkit</h1><p>Free browser tools by Teresa Akumu Opiyo. Your data stays in your browser and is never uploaded.</p>
+<nav id="tabs"><button data-t="budget" class="on">Budget</button><button data-t="check">Checklist</button><button data-t="show">Run of Show</button><button data-t="feed">Feedback Analyser</button><button data-t="help">How to use</button></nav></div></header>
+<main class="wrap">
+
+<section id="budget" class="panel on">
+<h2>Event Budget Tracker</h2><p class="lead">Enter planned and actual costs. Totals, variance and a comparison chart update automatically.</p>
+<div class="kpis" id="bk"></div>
+<div class="card"><div class="row">
+<label>Category<select id="bc"><option>Venue</option><option>Catering</option><option>Accommodation</option><option>Travel</option><option>Materials</option><option>Speakers</option><option>Communications</option><option>Platform</option><option>Contingency</option><option>Other</option></select></label>
+<label class="wide">Item<input id="bi" placeholder="e.g. Room hire"></label>
+<label>Planned (EUR)<input id="bp" type="number" min="0" step="any"></label>
+<label>Actual (EUR)<input id="ba" type="number" min="0" step="any"></label>
+<button class="b" id="badd">Add item</button></div></div>
+<div class="grid"><div class="card" style="overflow:auto"><table><thead><tr><th>Category</th><th>Item</th><th>Planned</th><th>Actual</th><th>Variance</th><th></th></tr></thead><tbody id="bt"></tbody></table><p class="note" id="bempty"></p></div>
+<div class="card"><b>Planned versus actual by category</b><div id="bchart" style="margin-top:12px"></div></div></div>
+<div class="noprint"><button class="b alt" id="bsample">Load sample budget</button> <button class="b alt" id="bcsv">Download CSV</button> <button class="b alt" id="bclear">Clear all</button></div>
+</section>
+
+<section id="check" class="panel">
+<h2>Event Checklist</h2><p class="lead">Set your event date to see a deadline for each task. Tick tasks off as you go. Progress is saved in this browser.</p>
+<div class="card"><div class="row"><label>Event date<input id="cd" type="date"></label><label>Progress<div class="bar" style="margin-top:8px"><i id="cbar" style="width:0"></i></div></label><div class="kpi" style="flex:0 0 120px"><b id="cpct">0%</b><span>complete</span></div></div></div>
+<div id="cl"></div>
+<div class="card"><div class="row"><label>Add your own task<input id="cn" placeholder="e.g. Arrange photographer"></label><label>Phase<select id="cp"></select></label><button class="b" id="cadd">Add</button></div></div>
+<div class="noprint"><button class="b alt" id="creset">Untick everything</button></div>
+</section>
+
+<section id="show" class="panel">
+<h2>Run of Show Builder</h2><p class="lead">Enter the start time and the length of each item. Start times are calculated for you. Copy the result for your team.</p>
+<div class="card"><div class="row"><label>Event name<input id="sn" placeholder="e.g. Innovation Workshop"></label><label>Start time<input id="ss" type="time" value="09:00"></label></div>
+<div class="row" style="margin-top:10px"><label class="wide">Item<input id="si" placeholder="e.g. Welcome and introductions"></label><label>Minutes<input id="sm" type="number" min="1" value="15"></label><label>Who<input id="sw"></label><button class="b" id="sadd">Add item</button></div></div>
+<div class="grid"><div class="card" style="overflow:auto"><table><thead><tr><th>Time</th><th>Min</th><th>Item</th><th>Who</th><th></th></tr></thead><tbody id="st"></tbody></table><p class="note" id="sempty"></p></div>
+<div class="card"><pre id="sout"></pre><div class="noprint" style="margin-top:10px"><button class="b" id="scopy">Copy</button> <button class="b alt" onclick="window.print()">Print</button> <span class="note" id="smsg"></span></div></div></div>
+<div class="noprint"><button class="b alt" id="ssample">Load sample programme</button> <button class="b alt" id="sclear">Clear all</button></div>
+</section>
+
+<section id="feed" class="panel">
+<h2>Feedback Analyser</h2><p class="lead">Paste the ratings for each question (numbers 1 to 5, separated by spaces, commas or new lines). Get averages, distribution and the net promoter score.</p>
+<div class="grid"><div class="card">
+<label style="display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:3px">Overall satisfaction (1 to 5)<textarea id="f1" placeholder="5 4 4 5 3 5"></textarea></label>
+<label style="display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:3px;margin-top:8px">Relevance of content (1 to 5)<textarea id="f2"></textarea></label>
+<label style="display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:3px;margin-top:8px">Organisation (1 to 5)<textarea id="f3"></textarea></label>
+<label style="display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:3px;margin-top:8px">Likelihood to recommend (0 to 10)<textarea id="f4" placeholder="9 10 7 8 6 10"></textarea></label>
+<div style="margin-top:10px"><button class="b alt" id="fsample">Fill with sample data</button></div></div>
+<div class="card" id="fout"></div></div>
+</section>
+
+<section id="help" class="panel">
+<h2>How to use</h2>
+<div class="card"><ol><li><b>Budget:</b> add each cost with the planned amount, then fill in the actual when invoices arrive. Positive variance means under budget.</li>
+<li><b>Checklist:</b> pick your event date. Tasks show a suggested deadline counted back from it. Add tasks specific to your event.</li>
+<li><b>Run of show:</b> add items in order. Times are calculated from the start time and durations.</li>
+<li><b>Feedback analyser:</b> export ratings from your survey tool, paste one question per box and read the summary.</li></ol>
+<p class="note">Data is saved in this browser only. Use the download buttons to keep copies. Guides and a worked example are in the repository folders <code>docs</code> and <code>examples</code>. Sample data is fictional.</p></div>
+</section>
+</main>
+<footer class="wrap">Built by Teresa Akumu Opiyo. MIT License.</footer>
+
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)};
+function load(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var eur=function(n){return (n||0).toLocaleString("en",{minimumFractionDigits:0,maximumFractionDigits:2})};
+function csv(rows,name){var t=rows.map(function(r){return r.map(function(c){return '"'+String(c==null?"":c).replace(/"/g,'""')+'"'}).join(",")}).join("\n");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv"}));a.download=name;a.click()}
+document.querySelectorAll("#tabs button").forEach(function(b){b.onclick=function(){document.querySelectorAll("#tabs button").forEach(function(x){x.classList.toggle("on",x===b)});document.querySelectorAll(".panel").forEach(function(p){p.classList.toggle("on",p.id===b.dataset.t)})}});
+function copy(txt,msg){(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){msg.textContent="Copied."},function(){msg.textContent="Select the text and press Ctrl+C."})}
+
+/* budget */
+var items=load("ept_budget",[]);
+function renderBudget(){
+  var P=0,A=0;items.forEach(function(r){P+=+r.p||0;A+=+r.a||0});
+  $("#bk").innerHTML=[["Planned",eur(P)],["Actual",eur(A)],["Variance",eur(P-A)],["Budget used",(P?Math.round(A/P*100):0)+"%"]].map(function(k){return '<div class="kpi"><b>'+k[1]+'</b><span>'+k[0]+'</span></div>'}).join("");
+  $("#bt").innerHTML=items.map(function(r,i){var v=(+r.p||0)-(+r.a||0),over=r.a!==""&&r.a!=null&&v<0;return '<tr><td>'+esc(r.c)+'</td><td>'+esc(r.i)+'</td><td>'+eur(+r.p)+'</td><td>'+(r.a===""||r.a==null?"":eur(+r.a))+'</td><td'+(over?' class="od"':"")+'>'+(r.a===""||r.a==null?"":eur(v))+'</td><td><button class="b alt sm" data-bd="'+i+'">Remove</button></td></tr>'}).join("");
+  $("#bempty").textContent=items.length?"":"No items yet. Add one above or load the sample budget.";
+  var cats={};items.forEach(function(r){cats[r.c]=cats[r.c]||{p:0,a:0};cats[r.c].p+=+r.p||0;cats[r.c].a+=+r.a||0});
+  var mx=Math.max.apply(null,[1].concat(Object.keys(cats).map(function(k){return Math.max(cats[k].p,cats[k].a)})));
+  $("#bchart").innerHTML=Object.keys(cats).map(function(k){var c=cats[k];return '<div style="margin-bottom:10px"><div style="font-size:12px;display:flex;justify-content:space-between"><span>'+esc(k)+'</span><span class="note">'+eur(c.p)+' planned, '+eur(c.a)+' actual</span></div><div class="bar" style="margin:3px 0"><i style="width:'+c.p/mx*100+'%;background:var(--navy)"></i></div><div class="bar"><i style="width:'+c.a/mx*100+'%;background:'+(c.a>c.p?"var(--bad)":"var(--good)")+'"></i></div></div>'}).join("")+(items.length?'<p class="note"><b style="color:var(--navy)">Blue</b> planned | <b style="color:var(--good)">green</b> actual within plan | <b style="color:var(--bad)">red</b> actual over plan</p>':"");
+  document.querySelectorAll("[data-bd]").forEach(function(b){b.onclick=function(){items.splice(+b.dataset.bd,1);save("ept_budget",items);renderBudget()}});
+}
+$("#badd").onclick=function(){var n=$("#bi").value.trim();if(!n){$("#bi").focus();return}items.push({c:$("#bc").value,i:n,p:$("#bp").value,a:$("#ba").value});save("ept_budget",items);$("#bi").value="";$("#bp").value="";$("#ba").value="";renderBudget()};
+$("#bsample").onclick=function(){items=items.concat([["Venue","Room hire",1200,1350],["Venue","Equipment and technology",400,380],["Catering","Lunch and refreshments",1800,1750],["Accommodation","Hotel rooms for speakers",900,1020],["Travel","Speaker travel",700,650],["Materials","Printing and signage",250,230],["Communications","Photography",300,300],["Contingency","About 10 percent",600,""]].map(function(a){return {c:a[0],i:a[1],p:a[2],a:a[3]}}));save("ept_budget",items);renderBudget()};
+$("#bcsv").onclick=function(){csv([["Category","Item","Planned","Actual","Variance"]].concat(items.map(function(r){return [r.c,r.i,r.p,r.a,r.a===""?"":(+r.p-+r.a)]})),"event-budget.csv")};
+$("#bclear").onclick=function(){if(confirm("Remove all budget items?")){items=[];save("ept_budget",items);renderBudget()}};
+
+/* checklist */
+var PH=[["12 weeks before",84,["Define the goal, audience, format and success measures","Set the budget and get approval","Choose the date and check clashes with holidays","Shortlist venues or the online platform and check accessibility","Confirm speakers or facilitators"]],
+["6 weeks before",42,["Book venue, catering and equipment and get written confirmations","Book hotels for guests within the travel policy rate","Open registration and publish the invitation","Prepare the agenda and share it with speakers","Plan communications: save the date, reminders, social media"]],
+["3 weeks before",21,["Send reminders to registered participants","Confirm dietary needs and accessibility requirements","Prepare name tags, signs, materials and presentations","Test the online platform, microphones and screen sharing","Brief the team with the run of show and roles"]],
+["1 week before",7,["Send final headcount to catering and venue","Print the run of show and contact list","Check room set up, decor, materials and refreshments","Prepare a backup plan for technical or speaker problems"]],
+["Event day",0,["Arrive early and run a technical check","Welcome guests and register arrivals","Keep to time and note any changes","Collect photos and permissions where needed","Clear up the room and return borrowed equipment"]],
+["After the event",-1,["Send thank you messages and the feedback survey within 24 hours","Pay invoices and reconcile the budget","Share slides or recordings","Write the post event report and record lessons learned"]]];
+var ck=load("ept_check",{done:{},custom:[],date:""});
+$("#cp").innerHTML=PH.map(function(p,i){return '<option value="'+i+'">'+p[0]+'</option>'}).join("");
+$("#cd").value=ck.date||"";
+function dueText(off){if(!ck.date)return "";var d=new Date(ck.date+"T00:00:00");d.setDate(d.getDate()+(off===-1?1:-off));var t=new Date();t.setHours(0,0,0,0);var late=d<t;return '<span class="note'+(late?" od":"")+'">'+d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})+(late?" (past)":"")+'</span>'}
+function renderCheck(){
+  var tot=0,dn=0,html="";
+  PH.forEach(function(p,pi){var list=p[2].map(function(t,k){return {t:t,id:pi+"-"+k}}).concat(ck.custom.filter(function(c){return c.p===pi}).map(function(c,k){return {t:c.t,id:"c"+c.id,custom:true,cid:c.id}}));
+    html+='<div class="card"><b>'+p[0]+'</b> '+dueText(p[1])+'<div style="margin-top:8px">'+list.map(function(x){tot++;var on=!!ck.done[x.id];if(on)dn++;return '<label style="display:flex;gap:8px;align-items:flex-start;padding:4px 0;cursor:pointer"><input type="checkbox" style="width:auto;margin-top:4px" data-id="'+x.id+'"'+(on?" checked":"")+'><span'+(on?' style="text-decoration:line-through;color:var(--muted)"':"")+'>'+esc(x.t)+'</span>'+(x.custom?'<button class="b alt sm" style="margin-left:auto" data-cd="'+x.cid+'">Remove</button>':"")+'</label>'}).join("")+'</div></div>'});
+  $("#cl").innerHTML=html;var pct=tot?Math.round(dn/tot*100):0;$("#cbar").style.width=pct+"%";$("#cpct").textContent=pct+"%";
+  document.querySelectorAll("#cl input[type=checkbox]").forEach(function(c){c.onchange=function(){ck.done[c.dataset.id]=c.checked;save("ept_check",ck);renderCheck()}});
+  document.querySelectorAll("[data-cd]").forEach(function(b){b.onclick=function(e){e.preventDefault();ck.custom=ck.custom.filter(function(c){return String(c.id)!==b.dataset.cd});save("ept_check",ck);renderCheck()}});
+}
+$("#cd").onchange=function(){ck.date=$("#cd").value;save("ept_check",ck);renderCheck()};
+$("#cadd").onclick=function(){var t=$("#cn").value.trim();if(!t){$("#cn").focus();return}ck.custom.push({id:Date.now(),t:t,p:+$("#cp").value});save("ept_check",ck);$("#cn").value="";renderCheck()};
+$("#creset").onclick=function(){ck.done={};save("ept_check",ck);renderCheck()};
+
+/* run of show */
+var sh=load("ept_show",{items:[]});
+function hm(m){m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")}
+function tmin(s){var a=(s||"09:00").split(":");return +a[0]*60+ +a[1]}
+function renderShow(){
+  var t=tmin($("#ss").value),rows=[];sh.items.forEach(function(x){rows.push({s:t,e:t+ +x.m,x:x});t+= +x.m});
+  $("#st").innerHTML=rows.map(function(r,i){return '<tr><td>'+hm(r.s)+' to '+hm(r.e)+'</td><td>'+r.x.m+'</td><td>'+esc(r.x.i)+'</td><td>'+esc(r.x.w)+'</td><td><button class="b alt sm" data-sd="'+i+'">Remove</button></td></tr>'}).join("");
+  $("#sempty").textContent=sh.items.length?"":"No items yet. Add one above or load the sample programme.";
+  var L=["RUN OF SHOW"+($("#sn").value?": "+$("#sn").value:"")];L.push("");rows.forEach(function(r){L.push(hm(r.s)+" to "+hm(r.e)+"  "+r.x.i+(r.x.w?" ("+r.x.w+")":""))});
+  if(rows.length){L.push("");L.push("Total length: "+Math.floor((rows[rows.length-1].e-rows[0].s)/60)+" h "+((rows[rows.length-1].e-rows[0].s)%60)+" min")}
+  $("#sout").textContent=L.join("\n");
+  document.querySelectorAll("[data-sd]").forEach(function(b){b.onclick=function(){sh.items.splice(+b.dataset.sd,1);save("ept_show",sh);renderShow()}});
+}
+$("#ss").oninput=$("#sn").oninput=renderShow;
+$("#sadd").onclick=function(){var n=$("#si").value.trim();if(!n){$("#si").focus();return}sh.items.push({i:n,m:Math.max(1,+$("#sm").value||1),w:$("#sw").value});save("ept_show",sh);$("#si").value="";$("#sw").value="";renderShow()};
+$("#ssample").onclick=function(){$("#sn").value="Innovation Workshop";sh.items=sh.items.concat([["Registration and coffee",30,"Coordinator"],["Welcome and introductions",15,"Host"],["Session 1: Opening talk",45,"Speaker"],["Break",20,""],["Session 2: Group work",60,"Facilitators"],["Lunch",60,""],["Session 3: Presentations",45,"Groups"],["Closing and survey link",15,"Host"]].map(function(a){return {i:a[0],m:a[1],w:a[2]}}));save("ept_show",sh);renderShow()};
+$("#sclear").onclick=function(){if(confirm("Remove all items?")){sh.items=[];save("ept_show",sh);renderShow()}};
+$("#scopy").onclick=function(){copy($("#sout").textContent,$("#smsg"))};
+
+/* feedback */
+function nums(s){return (s.match(/-?\d+(\.\d+)?/g)||[]).map(Number)}
+function renderFeed(){
+  var out="",any=false;
+  [["f1","Overall satisfaction",1,5],["f2","Relevance of content",1,5],["f3","Organisation",1,5]].forEach(function(q){
+    var v=nums($("#"+q[0]).value).filter(function(x){return x>=q[2]&&x<=q[3]});if(!v.length)return;any=true;
+    var avg=v.reduce(function(a,b){return a+b},0)/v.length;
+    out+='<div style="margin-bottom:14px"><b>'+q[1]+'</b>: average <b>'+avg.toFixed(2)+'</b> out of 5 from '+v.length+' responses';
+    for(var r=5;r>=1;r--){var n=v.filter(function(x){return Math.round(x)===r}).length;out+='<div style="display:flex;gap:8px;align-items:center;font-size:12px;margin-top:3px"><span style="width:14px">'+r+'</span><div class="bar" style="flex:1"><i style="width:'+n/v.length*100+'%"></i></div><span style="width:60px">'+n+' ('+Math.round(n/v.length*100)+'%)</span></div>'}out+='</div>'});
+  var v=nums($("#f4").value).filter(function(x){return x>=0&&x<=10});
+  if(v.length){any=true;var pro=v.filter(function(x){return x>=9}).length,det=v.filter(function(x){return x<=6}).length,pas=v.length-pro-det,nps=Math.round((pro-det)/v.length*100);
+    out+='<div><b>Net promoter score</b>: <b style="font-size:22px;color:var(--navy)">'+nps+'</b><div class="note">Promoters (9 to 10): '+pro+' | Passives (7 to 8): '+pas+' | Detractors (0 to 6): '+det+' | '+v.length+' responses. NPS = percent promoters minus percent detractors.</div></div>'}
+  $("#fout").innerHTML=any?out:'<p class="note">Paste ratings on the left to see averages and the net promoter score. Ratings outside the valid range are ignored.</p>'}
+["f1","f2","f3","f4"].forEach(function(k){$("#"+k).addEventListener("input",renderFeed)});
+$("#fsample").onclick=function(){$("#f1").value="5 4 4 5 3 5 4 5 4 4";$("#f2").value="5 5 4 4 4 5 3 5 4 5";$("#f3").value="4 4 3 5 4 4 5 4 3 4";$("#f4").value="9 10 7 8 6 10 9 8 9 10";renderFeed()};
+renderBudget();renderCheck();renderShow();renderFeed();
+})();
+</script>
+</body>
+</html>
